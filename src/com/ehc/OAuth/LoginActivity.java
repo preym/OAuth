@@ -26,11 +26,18 @@ public class LoginActivity extends Activity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.login);
-    Button button = (Button) findViewById(R.id.facebook);
+    Button button = (Button) findViewById(R.id.signup);
+
+    button.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(getBaseContext(), SignUpActivity.class);
+        startActivity(intent);
+      }
+    });
   }
 
   private void getSession() {
-
     Session.openActiveSession(this, true, new Session.StatusCallback() {
       @Override
       public void call(Session session, SessionState state, Exception exception) {
@@ -64,11 +71,10 @@ public class LoginActivity extends Activity {
     super.onActivityResult(requestCode, resultCode, data);
     Session session = Session.getActiveSession();
     session.onActivityResult(this, requestCode, resultCode, data);
-    getSession();
-    Intent intent = new Intent(getBaseContext(), DashboardActivity.class);
-    intent.putExtra("user", currentUser.getName());
-    Log.d("user", currentUser.getUsername());
-    startActivity(intent);
+    if (resultCode == RESULT_OK) {
+      Intent intent = new Intent(getBaseContext(), DashboardActivity.class);
+      startActivity(intent);
+    }
   }
 
 }

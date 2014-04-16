@@ -12,7 +12,7 @@
                   android:orientation="vertical"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:padding="16dp">
+                  android:padding="32dp">
         <EditText
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -33,13 +33,13 @@
     <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Log In"
+            android:text="Login"
             android:layout_gravity="bottom"
             android:id="@+id/logIn"/>
     <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Register with Email"
+            android:text="Log in with Email"
             android:layout_gravity="bottom"
             android:id="@+id/mail"/>
     <com.facebook.widget.LoginButton
@@ -51,6 +51,12 @@
             facebook:confirm_logout="false"
             facebook:fetch_user_info="true"
             />
+    <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Signup"
+            android:layout_gravity="bottom"
+            android:id="@+id/signup"/>
 
 
 </LinearLayout>
