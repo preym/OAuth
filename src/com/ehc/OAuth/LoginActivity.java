@@ -16,13 +16,14 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
+import com.facebook.widget.LoginButton;
 
 
 public class LoginActivity extends Activity {
 
   GraphUser currentUser = null;
   Button signupButton;
-  Button facebookButton;
+  LoginButton facebookButton;
   Button emailButton;
   Button signInButton;
   EditText userName;
@@ -47,7 +48,8 @@ public class LoginActivity extends Activity {
   }
 
   private void getWidgets() {
-    facebookButton = (Button) findViewById(R.id.facebook);
+    facebookButton = (LoginButton) findViewById(R.id.facebook);
+    facebookButton.setReadPermissions("email");
     emailButton = (Button) findViewById(R.id.email);
     signupButton = (Button) findViewById(R.id.signup);
     signInButton = (Button) findViewById(R.id.logIn);
@@ -64,16 +66,14 @@ public class LoginActivity extends Activity {
         if (session.isOpened()) {
           Log.d("test:", "session opened");
           Request.newMeRequest(session, new Request.GraphUserCallback() {
-
             // callback after Graph API response with user object
             @Override
             public void onCompleted(GraphUser user, Response response) {
               if (user != null) {
                 Log.d("test:", "user not null");
                 currentUser = user;
-
+                Log.d("email", (String) user.getProperty("email"));
                 checkUserExistency();
-
               } else {
                 Log.d("test:", "user null");
               }
@@ -106,6 +106,7 @@ public class LoginActivity extends Activity {
     user.setFirstName(currentUser.getFirstName());
     user.setLastName(currentUser.getLastName());
     user.setUserName(currentUser.getUsername());
+    user.setEmail((String) currentUser.getProperty("email"));
     user.setLocation("Hyderabad");
     intent.putExtra("user", user);
     startActivity(intent);

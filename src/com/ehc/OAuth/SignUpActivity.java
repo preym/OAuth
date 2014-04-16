@@ -15,6 +15,7 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
+import com.facebook.widget.LoginButton;
 
 
 public class SignUpActivity extends Activity {
@@ -29,7 +30,7 @@ public class SignUpActivity extends Activity {
   EditText address;
   Button signUp;
   Button signUpWithMail;
-  Button signUpWithFacebook;
+  LoginButton signUpWithFacebook;
   GraphUser currentUser;
 
   public void onCreate(Bundle savedInstanceState) {
@@ -124,7 +125,8 @@ public class SignUpActivity extends Activity {
     address = (EditText) findViewById(R.id.address);
     signUp = (Button) findViewById(R.id.sign_up);
     signUpWithMail = (Button) findViewById(R.id.sign_with_email);
-    signUpWithFacebook = (Button) findViewById(R.id.sign_with_facebook);
+    signUpWithFacebook = (LoginButton) findViewById(R.id.sign_with_facebook);
+    signUpWithFacebook.setReadPermissions("email");
   }
 
   @Override
@@ -183,6 +185,7 @@ public class SignUpActivity extends Activity {
     firstName.setText(currentUser.getFirstName());
     lastName.setText(currentUser.getLastName());
     address.setText("hyderabad");
+    email.setText((String) currentUser.getProperty("email"));
   }
 
   private void populateFields(User user) {
@@ -190,6 +193,8 @@ public class SignUpActivity extends Activity {
     firstName.setText(user.getFirstName());
     lastName.setText(user.getLastName());
     address.setText(user.getLocation());
+    email.setText(user.getEmail());
+
   }
 }
 

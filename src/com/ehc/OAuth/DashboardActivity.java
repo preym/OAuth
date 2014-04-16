@@ -36,8 +36,6 @@ public class DashboardActivity extends Activity {
 
 
   private void getSession() {
-
-
     Session.openActiveSession(this, true, new Session.StatusCallback() {
       @Override
       public void call(Session session, SessionState state, Exception exception) {

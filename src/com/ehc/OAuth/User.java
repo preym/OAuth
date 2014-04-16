@@ -23,6 +23,16 @@ public class User implements Serializable {
   String middleName;
   String lastName;
 
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  String email;
+
   public String getLocation() {
     return location;
   }
