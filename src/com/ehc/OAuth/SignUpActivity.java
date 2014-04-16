@@ -37,7 +37,11 @@ public class SignUpActivity extends Activity {
     setContentView(R.layout.signup);
     getWidgets();
     applyAction();
-
+    if (getIntent().hasExtra("user")) {
+      User user = (User) getIntent().getSerializableExtra("user");
+      signUpWithFacebook.setVisibility(View.GONE);
+      populateFields(user);
+    }
   }
 
   private void applyAction() {
@@ -89,10 +93,14 @@ public class SignUpActivity extends Activity {
     DatabaseHelper dbHelper = new DatabaseHelper(this);
     SQLiteDatabase database = dbHelper.getWritableDatabase();
     if (database != null) {
-      String query = "insert into user(USERNAME,FIRSTNAME,LASTNAME,EMAIL,ADDRESS,PASSWORD,PHONENUMBER) " +
-          "values('" + userName.getText() + "','"
-          + firstName.getText() + "','" + lastName.getText() + "','" +
-          email.getText() + "','" + address.getText() + "','" + password.getText() + "'," + contactNumber.getText() + ")";
+      String query = "insert into user(USERNAME,FIRSTNAME,LASTNAME,EMAIL,ADDRESS,PASSWORD,PHONENUMBER) "
+          + "values('" + userName.getText()
+          + "','" + firstName.getText()
+          + "','" + lastName.getText() + "','"
+          + email.getText() + "','" + address.getText()
+          + "','" + password.getText()
+          + "'," + contactNumber.getText()
+          + ")";
       database.execSQL(query);
       database.close();
       Toast.makeText(this, "User Registered Successfully", Toast.LENGTH_LONG).show();
@@ -103,7 +111,6 @@ public class SignUpActivity extends Activity {
   private void startDashboard() {
     Intent intent = new Intent(this, DashboardActivity.class);
     startActivity(intent);
-
   }
 
   private void getWidgets() {
@@ -118,7 +125,6 @@ public class SignUpActivity extends Activity {
     signUp = (Button) findViewById(R.id.sign_up);
     signUpWithMail = (Button) findViewById(R.id.sign_with_email);
     signUpWithFacebook = (Button) findViewById(R.id.sign_with_facebook);
-
   }
 
   @Override
@@ -135,13 +141,11 @@ public class SignUpActivity extends Activity {
   private void checkUserExistency() {
     DatabaseHelper dbHelper = new DatabaseHelper(this);
     SQLiteDatabase database = dbHelper.getReadableDatabase();
-    Cursor cursor = database.rawQuery("select * from user where USERNAME='" + currentUser.getUsername() + "'", null);
-    Log.d("test:", cursor.getCount() + "");
-
+    Cursor cursor = database.rawQuery("select * from user where USERNAME='"
+        + currentUser.getUsername() + "'", null);
     if (cursor != null && cursor.getCount() > 0) {
       startDashboard();
     }
-
   }
 
   private void getSession() {
@@ -179,6 +183,13 @@ public class SignUpActivity extends Activity {
     firstName.setText(currentUser.getFirstName());
     lastName.setText(currentUser.getLastName());
     address.setText("hyderabad");
+  }
+
+  private void populateFields(User user) {
+    userName.setText(user.getUserName());
+    firstName.setText(user.getFirstName());
+    lastName.setText(user.getLastName());
+    address.setText(user.getLocation());
   }
 }
 

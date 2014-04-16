@@ -3,10 +3,13 @@ package com.ehc.OAuth;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import com.facebook.Request;
 import com.facebook.Response;
@@ -18,23 +21,38 @@ import com.facebook.model.GraphUser;
 public class LoginActivity extends Activity {
 
   GraphUser currentUser = null;
+  Button signupButton;
+  Button facebookButton;
+  Button emailButton;
+  Button signInButton;
+  EditText userName;
+  EditText password;
 
-  /**
-   * Called when the activity is first created.
-   */
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.login);
-    Button button = (Button) findViewById(R.id.signup);
+    getWidgets();
+    applyAction();
+  }
 
-    button.setOnClickListener(new View.OnClickListener() {
+  private void applyAction() {
+    signupButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         Intent intent = new Intent(getBaseContext(), SignUpActivity.class);
         startActivity(intent);
       }
     });
+  }
+
+  private void getWidgets() {
+    facebookButton = (Button) findViewById(R.id.facebook);
+    emailButton = (Button) findViewById(R.id.email);
+    signupButton = (Button) findViewById(R.id.signup);
+    signInButton = (Button) findViewById(R.id.logIn);
+    userName = (EditText) findViewById(R.id.username);
+    password = (EditText) findViewById(R.id.password);
   }
 
   private void getSession() {
@@ -53,6 +71,9 @@ public class LoginActivity extends Activity {
               if (user != null) {
                 Log.d("test:", "user not null");
                 currentUser = user;
+
+                checkUserExistency();
+
               } else {
                 Log.d("test:", "user null");
               }
@@ -66,14 +87,43 @@ public class LoginActivity extends Activity {
     });
   }
 
+  private void checkUserExistency() {
+    DatabaseHelper dbHelper = new DatabaseHelper(this);
+    SQLiteDatabase database = dbHelper.getReadableDatabase();
+    Cursor cursor = database.rawQuery("select * from user where USERNAME='"
+        + currentUser.getUsername() + "'", null);
+    if (cursor != null && cursor.getCount() > 0) {
+      startDashboard();
+    } else {
+      startSignupActivity();
+    }
+
+  }
+
+  private void startSignupActivity() {
+    Intent intent = new Intent(this, SignUpActivity.class);
+    User user = new User();
+    user.setFirstName(currentUser.getFirstName());
+    user.setLastName(currentUser.getLastName());
+    user.setUserName(currentUser.getUsername());
+    user.setLocation("Hyderabad");
+    intent.putExtra("user", user);
+    startActivity(intent);
+  }
+
+  private void startDashboard() {
+    Intent intent = new Intent(this, DashboardActivity.class);
+    intent.putExtra("userName", currentUser.getUsername());
+    startActivity(intent);
+  }
+
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     Session session = Session.getActiveSession();
     session.onActivityResult(this, requestCode, resultCode, data);
     if (resultCode == RESULT_OK) {
-      Intent intent = new Intent(getBaseContext(), DashboardActivity.class);
-      startActivity(intent);
+      getSession();
     }
   }
 

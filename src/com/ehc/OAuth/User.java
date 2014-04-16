@@ -2,6 +2,8 @@ package com.ehc.OAuth;
 
 import com.facebook.model.GraphLocation;
 
+import java.io.Serializable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ehc
@@ -9,7 +11,7 @@ import com.facebook.model.GraphLocation;
  * Time: 10:37 AM
  * To change this template use File | Settings | File Templates.
  */
-public class User {
+public class User implements Serializable {
 
   private long id;
   private String name;

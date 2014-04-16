@@ -29,7 +29,9 @@ public class DashboardActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.dashboard);
     textView = (TextView) findViewById(R.id.textView);
-//    getSession();
+    if (getIntent().hasExtra("userName")) {
+      textView.setText("Hello, " + getIntent().getStringExtra("userName"));
+    }
   }
 
 
@@ -62,7 +64,6 @@ public class DashboardActivity extends Activity {
         } else {
           Log.d("test:", "session not opened");
         }
-
       }
     });
   }
