@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OAuth</string>
+    <string name="app_id">1428925007356558</string>
+    <string name="fbGrantPermission">Grant Hermes permission to post</string>
 </resources>
