@@ -194,7 +194,6 @@ public class SignUpActivity extends Activity {
     lastName.setText(user.getLastName());
     address.setText(user.getLocation());
     email.setText(user.getEmail());
-
   }
 }
 

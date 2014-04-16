@@ -6,91 +6,99 @@
               android:layout_height="match_parent"
               android:padding="16dp"
               android:isScrollContainer="true">
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:orientation="vertical"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:padding="16dp">
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:id="@+id/user_name"
-                android:hint="User Name"
-                android:inputType="text"
-                />
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:id="@+id/first_name"
-                android:hint="FirstName"
-                android:inputType="text"
-                />
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:id="@+id/last_name"
-                android:hint="LastName"
-                android:inputType="text"
-                />
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:id="@+id/email"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                />
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:id="@+id/address"
-                android:hint="Address"
-                android:inputType="text"
-                />
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:id="@+id/contact_number"
-                android:hint="Contact No"
-                android:inputType="phone"
-                />
-
-        <EditText android:layout_width="match_parent"
-                  android:layout_height="56dp"
-                  android:id="@+id/password"
-                  android:hint="Password"
-                  android:inputType="textPassword"
-                />
-        <EditText android:layout_width="match_parent"
-                  android:layout_height="56dp"
-                  android:id="@+id/confirm_password"
-                  android:hint="Confirm Password"
-                  android:inputType="textPassword"
-                />
-    </LinearLayout>
-
-    <Button
+    <ScrollView
+            android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Signup"
-            android:layout_gravity="bottom"
-            android:id="@+id/sign_up"/>
+            android:orientation="vertical"
+            android:overScrollMode="always">
 
-    <com.facebook.widget.LoginButton
-            xmlns:facebook="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/sign_with_facebook"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            facebook:confirm_logout="false"
-            facebook:fetch_user_info="true"
-            android:text="Sign up with Facebook"
-            />
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                      android:orientation="vertical"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:padding="16dp">
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:id="@+id/user_name"
+                    android:hint="User Name"
+                    android:inputType="text"
+                    />
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:id="@+id/first_name"
+                    android:hint="FirstName"
+                    android:inputType="text"
+                    />
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:id="@+id/last_name"
+                    android:hint="LastName"
+                    android:inputType="text"
+                    />
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:id="@+id/email"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    />
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:id="@+id/address"
+                    android:hint="Address"
+                    android:inputType="text"
+                    />
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:id="@+id/contact_number"
+                    android:hint="Contact No"
+                    android:inputType="phone"
+                    />
 
-    <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SignUp with Email"
-            android:layout_gravity="bottom"
-            android:id="@+id/sign_with_email"/>
+            <EditText android:layout_width="match_parent"
+                      android:layout_height="56dp"
+                      android:id="@+id/password"
+                      android:hint="Password"
+                      android:inputType="textPassword"
+                    />
+            <EditText android:layout_width="match_parent"
+                      android:layout_height="56dp"
+                      android:id="@+id/confirm_password"
+                      android:hint="Confirm Password"
+                      android:inputType="textPassword"
+                    />
+
+
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Signup"
+                    android:layout_gravity="bottom"
+                    android:id="@+id/sign_up"/>
+
+            <com.facebook.widget.LoginButton
+                    xmlns:facebook="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/sign_with_facebook"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    facebook:confirm_logout="false"
+                    facebook:fetch_user_info="true"
+                    android:text="Sign up with Facebook"
+                    />
+
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="SignUp with Email"
+                    android:layout_gravity="bottom"
+                    android:id="@+id/sign_with_email"/>
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>
