@@ -17,6 +17,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="facebook" />
     <orderEntry type="library" name="Parse-1.4.3" level="project" />
+    <orderEntry type="library" name="Parse-1.4.3" level="project" />
   </component>
 </module>
 
