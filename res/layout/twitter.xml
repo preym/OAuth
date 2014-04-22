@@ -9,6 +9,11 @@
             android:layout_height="wrap_content"
             android:text="twitter"
             android:id="@+id/twitter"/>
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="twitter"
+            android:id="@+id/twitter"/>
     <EditText
             android:id="@+id/editTxt"
             android:layout_height="wrap_content"
