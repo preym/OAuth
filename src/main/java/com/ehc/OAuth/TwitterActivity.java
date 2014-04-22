@@ -35,6 +35,7 @@ public class TwitterActivity extends Activity {
     setContentView(R.layout.twitter);
     twitter = (Button) findViewById(R.id.twitter);
     edit = (EditText) findViewById(R.id.editTxt);
+    twitter.setBackgroundResource(R.drawable.twitter);
     adapter = new SocialAuthAdapter(new ResponseListener());
     twitter.setOnClickListener(new View.OnClickListener() {
       @Override

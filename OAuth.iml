@@ -23,6 +23,7 @@
     <orderEntry type="module" module-name="socialauth-android" />
     <orderEntry type="module" module-name="custom-ui" />
     <orderEntry type="library" name="socialauth-4.4" level="project" />
+    <orderEntry type="library" name="Maven: org.twitter4j:twitter4j-core:4.0.2-SNAPSHOT" level="project" />
   </component>
 </module>
 
