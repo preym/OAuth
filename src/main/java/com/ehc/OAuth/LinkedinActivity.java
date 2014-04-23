@@ -82,6 +82,11 @@ public class LinkedinActivity extends Activity {
     public void onError(SocialAuthError e) {
       Log.d("error", e.getMessage());
     }
+
+    @Override
+    public void onExecute(List<Contact> t) {
+      //To change body of implemented methods use File | Settings | File Templates.
+    }
   }
 
   private class ProfileDataListener implements SocialAuthListener<Profile> {
@@ -103,6 +108,11 @@ public class LinkedinActivity extends Activity {
     public void onError(SocialAuthError e) {
       Log.d("error", e.getMessage());
     }
+
+    @Override
+    public void onExecute(List<Contact> t) {
+      //To change body of implemented methods use File | Settings | File Templates.
+    }
   }
 
   private class ContactDataListener implements SocialAuthListener<List<Contact>> {
@@ -122,6 +132,11 @@ public class LinkedinActivity extends Activity {
     @Override
     public void onError(SocialAuthError e) {
       Log.d("error", e.getMessage());
+    }
+
+    @Override
+    public void onExecute(List<Contact> t) {
+      //To change body of implemented methods use File | Settings | File Templates.
     }
   }
 }
