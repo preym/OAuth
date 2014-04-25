@@ -127,7 +127,7 @@ public class LoginActivity extends Activity {
     session.onActivityResult(this, requestCode, resultCode, data);
     if (resultCode == RESULT_OK) {
       getSession();
-      requestMyFacebookFriends(session);
+     // requestMyFacebookFriends(session);
     }
   }
 
@@ -138,8 +138,8 @@ public class LoginActivity extends Activity {
       @Override
       public void onCompleted(List<GraphUser> users, Response response) {
         if (users != null) {
-          Log.d("Friends1225", users.toString());
-          Log.d("Friends1225", response.toString());
+         for(GraphUser user:users)
+           Log.d("88888"+user.getName(),user.toString());
         }
 
       }
