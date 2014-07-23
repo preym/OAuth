@@ -25,7 +25,6 @@ public class DashboardActivity extends Activity {
   TextView textView;
 
   public void onCreate(Bundle savedInstanceState) {
-    Log.d("test:", "onCreate start");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.dashboard);
     textView = (TextView) findViewById(R.id.textView);
@@ -42,25 +41,21 @@ public class DashboardActivity extends Activity {
         if (!session.isOpened())
           session = new Session(getApplicationContext());
         if (session.isOpened()) {
-          Log.d("test:", "session opened");
           Request.newMeRequest(session, new Request.GraphUserCallback() {
             // callback after Graph API response with user object
             @Override
             public void onCompleted(GraphUser user, Response response) {
               if (user != null) {
-                Log.d("test:", "user not null");
                 currentUser = user;
                 textView.setText(user.getName() + "\n" + user.getFirstName() + "\n" + user.getLastName()
                     + "\n" + user.getMiddleName() + "\n" + user.getBirthday() + "\n" +
                     user.getId() + "\n" + user.getLink()
                     + "\n" + user.getLocation() + "\n" + user.getUsername());
               } else {
-                Log.d("test:", "user null");
               }
             }
           }).executeAsync();
         } else {
-          Log.d("test:", "session not opened");
         }
       }
     });

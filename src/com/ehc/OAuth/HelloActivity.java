@@ -161,8 +161,6 @@ public class HelloActivity extends Activity {
    * Starts an activity in Google Play Services so the user can pick an account
    */
   private void pickUserAccount() {
-    Log.d(TAG, "pick User Account");
-
     String[] accountTypes = new String[]{"com.google"};
     Intent intent = AccountPicker.newChooseAccountIntent(null, null,
         accountTypes, false, null, null, null, null);

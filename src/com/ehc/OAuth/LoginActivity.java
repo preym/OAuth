@@ -31,12 +31,13 @@ public class LoginActivity extends Activity implements View.OnClickListener,
 
   GraphUser currentUser = null;
   LoginButton facebookButton;
-  Button emailButton;
+  Button emailButton, signOut;
   EditText password;
   private static final int REQUEST_CODE_RESOLVE_ERR = 9000;
   private ProgressDialog mConnectionProgressDialog;
   private PlusClient mPlusClient;
   private ConnectionResult mConnectionResult;
+  User userDetails;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,8 @@ public class LoginActivity extends Activity implements View.OnClickListener,
     facebookButton.setReadPermissions("email");
     emailButton = (Button) findViewById(R.id.email);
     password = (EditText) findViewById(R.id.password);
+    signOut = (Button) findViewById(R.id.sign_out);
+    signOut.setOnClickListener(this);
   }
 
   private void getSession() {
@@ -67,30 +70,38 @@ public class LoginActivity extends Activity implements View.OnClickListener,
         if (!session.isOpened())
           session = new Session(getApplicationContext());
         if (session.isOpened()) {
-          Log.d("test:", "session opened");
           Request.newMeRequest(session, new Request.GraphUserCallback() {
             // callback after Graph API response with user object
             @Override
             public void onCompleted(GraphUser user, Response response) {
               if (user != null) {
-                Log.d("test:", "user not null");
                 currentUser = user;
-                Log.d("email", (String) user.getProperty("email"));
-                checkUserExistency(currentUser.getUsername());
+                populateUserFromfb();
+                checkUserExistency();
               } else {
-                Log.d("test:", "user null");
               }
             }
           }).executeAsync();
         } else {
-          Log.d("test:", "session not opened");
         }
 
       }
     });
   }
 
-  private void checkUserExistency(String name) {
+  private void populateUserFromfb() {
+    userDetails = new User();
+    userDetails.setFirstName(currentUser.getFirstName());
+    userDetails.setLastName(currentUser.getLastName());
+    userDetails.setUserName(currentUser.getUsername());
+    userDetails.setEmail((String) currentUser.getProperty("email"));
+  }
+
+  private void checkUserExistency() {
+
+    String name = "";
+    if (userDetails != null)
+      name = userDetails.getUserName();
     DatabaseHelper dbHelper = new DatabaseHelper(this);
     SQLiteDatabase database = dbHelper.getReadableDatabase();
     Cursor cursor = database.rawQuery("select * from user where USERNAME='"
@@ -105,19 +116,14 @@ public class LoginActivity extends Activity implements View.OnClickListener,
 
   private void startSignupActivity() {
     Intent intent = new Intent(this, SignUpActivity.class);
-    User user = new User();
-    user.setFirstName(currentUser.getFirstName());
-    user.setLastName(currentUser.getLastName());
-    user.setUserName(currentUser.getUsername());
-    user.setEmail((String) currentUser.getProperty("email"));
-    user.setLocation("Hyderabad");
-    intent.putExtra("user", user);
+    userDetails.setLocation("Hyderabad");
+    intent.putExtra("user", userDetails);
     startActivity(intent);
   }
 
   private void startDashboard() {
     Intent intent = new Intent(this, DashboardActivity.class);
-    intent.putExtra("userName", currentUser.getUsername());
+    intent.putExtra("userName", userDetails.getUserName());
     startActivity(intent);
   }
 
@@ -139,16 +145,21 @@ public class LoginActivity extends Activity implements View.OnClickListener,
   @Override
   public void onConnected(Bundle bundle) {
     mConnectionProgressDialog.cancel();
+    if (mPlusClient.isConnected()) {
+      populateUserFromGPlus();
+      checkUserExistency();
+    }
+  }
+
+  private void populateUserFromGPlus() {
+    Person currentPerson = mPlusClient.getCurrentPerson();
     String accountName = mPlusClient.getAccountName();
     Toast.makeText(this, accountName + " is connected.", Toast.LENGTH_LONG).show();
-    if (mPlusClient.isConnected()) {
-      Person currentPerson = mPlusClient.getCurrentPerson();
-      Log.d("test", "Name: " + currentPerson.getDisplayName());
-      Log.d("test", "Gender: " + currentPerson.getGender());
-      Log.d("test", "Email: " + accountName);
-      Log.d("test", "DateOFBrith: " + currentPerson.getBirthday());
-      Log.d("test", "ID: " + currentPerson.getId());
-    }
+    userDetails = new User();
+    userDetails.setEmail(accountName);
+    userDetails.setUserName(currentPerson.getDisplayName());
+    userDetails.setFirstName(currentPerson.getName().getGivenName());
+    userDetails.setLastName(currentPerson.getName().getFamilyName());
   }
 
   @Override
@@ -158,8 +169,13 @@ public class LoginActivity extends Activity implements View.OnClickListener,
 
   @Override
   public void onClick(View view) {
-    if (view.getId() == R.id.google_sign_in_button)
+    if (view.getId() == R.id.sign_out) {
+      signOutGooglePlus();
+    }
+    if (view.getId() == R.id.google_sign_in_button) {
+      connectToGoogle();
       signInGooglePlus();
+    }
   }
 
   public void signInGooglePlus() {
@@ -175,6 +191,14 @@ public class LoginActivity extends Activity implements View.OnClickListener,
           connectToGoogle();
         }
       }
+    }
+  }
+
+  public void signOutGooglePlus() {
+    if (mPlusClient.isConnected()) {
+      mPlusClient.clearDefaultAccount();
+      mPlusClient.disconnect();
+      Toast.makeText(getApplicationContext(), "Successfully signOut", Toast.LENGTH_SHORT).show();
     }
   }
 
@@ -200,7 +224,7 @@ public class LoginActivity extends Activity implements View.OnClickListener,
   @Override
   protected void onStart() {
     super.onStart();
-    connectToGoogle();
+    // connectToGoogle();
   }
 
   public void connectToGoogle() {

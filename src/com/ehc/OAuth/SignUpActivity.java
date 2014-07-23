@@ -30,7 +30,7 @@ public class SignUpActivity extends Activity {
   EditText address;
   Button signUp;
   Button signUpWithMail;
- // LoginButton signUpWithFacebook;
+  // LoginButton signUpWithFacebook;
   GraphUser currentUser;
 
   public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class SignUpActivity extends Activity {
     applyAction();
     if (getIntent().hasExtra("user")) {
       User user = (User) getIntent().getSerializableExtra("user");
-    //  signUpWithFacebook.setVisibility(View.GONE);
+      //  signUpWithFacebook.setVisibility(View.GONE);
       populateFields(user);
     }
   }
@@ -111,6 +111,7 @@ public class SignUpActivity extends Activity {
 
   private void startDashboard() {
     Intent intent = new Intent(this, DashboardActivity.class);
+    intent.putExtra("userName", userName.getText().toString());
     startActivity(intent);
   }
 

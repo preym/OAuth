@@ -60,7 +60,6 @@ public abstract class AbstractGetNameTask extends AsyncTask<Void, Void, Void> {
 
   protected void onError(String msg, Exception e) {
     if (e != null) {
-      Log.e(TAG, "Exception: ", e);
     }
     mActivity.show(msg);  // will be run in UI thread
   }
@@ -91,19 +90,13 @@ public abstract class AbstractGetNameTask extends AsyncTask<Void, Void, Void> {
     if (sc == 200) {
       InputStream is = con.getInputStream();
       String name = getFirstName(readResponse(is));
-   //   JSONObject profile = new JSONObject(readResponse(is));
-
-   //   Log.d("test:", profile.getString("client_email"));
-   //  Log.d("test:", profile.getString("id"));
-
-
+      //   JSONObject profile = new JSONObject(readResponse(is));
       mActivity.show("Hello " + name + "!");
       is.close();
       return;
     } else if (sc == 401) {
       GoogleAuthUtil.invalidateToken(mActivity, token);
       onError("Server auth error, please try again.", null);
-      Log.i(TAG, "Server auth error: " + readResponse(con.getErrorStream()));
       return;
     } else {
       onError("Server returned the following error code: " + sc, null);
@@ -131,13 +124,11 @@ public abstract class AbstractGetNameTask extends AsyncTask<Void, Void, Void> {
    */
   private String getFirstName(String jsonResponse) throws JSONException {
     JSONObject profile = new JSONObject(jsonResponse);
-    Log.d(TAG, profile.toString());
     return profile.getString(NAME_KEY);
   }
 
   private JSONObject getProfile(String jsonResponse) throws JSONException {
     JSONObject profile = new JSONObject(jsonResponse);
-    Log.d(TAG, profile.toString());
     return profile;
   }
 }
