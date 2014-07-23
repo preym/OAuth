@@ -19,6 +19,5 @@ public class Application extends android.app.Application {
     super.onCreate();
     Parse.initialize(getApplicationContext(), getString(R.string.app_id), "hMSjOPMrAsvrks3qdepfWkhXHBfgtl8s97zsDkU6");
     ParseFacebookUtils.initialize(getString(R.string.app_id));
-//    ParseFacebookUtils.initialize("hMSjOPMrAsvrks3qdepfWkhXHBfgtl8s97zsDkU6");
   }
 }

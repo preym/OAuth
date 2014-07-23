@@ -17,7 +17,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Parse-1.4.3" level="project" />
     <orderEntry type="module" module-name="facebook" />
-    <orderEntry type="library" name="google-play-services" level="project" />
+    <orderEntry type="module" module-name="google-play-services_lib" />
+    <orderEntry type="library" name="google-play-services (5)" level="project" />
   </component>
 </module>
 

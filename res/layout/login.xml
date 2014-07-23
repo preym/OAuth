@@ -7,41 +7,6 @@
               android:gravity="center"
               android:background="@drawable/images"
               android:padding="16dp">
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:orientation="vertical"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:padding="32dp">
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:id="@+id/username"
-                android:hint="Username"
-                android:inputType="textEmailAddress"
-                />
-
-        <EditText android:layout_width="match_parent"
-                  android:layout_height="56dp"
-                  android:id="@+id/password"
-                  android:hint="Password"
-                  android:inputType="textPassword"
-                />
-    </LinearLayout>
-
-
-    <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Login"
-            android:layout_gravity="bottom"
-            android:id="@+id/logIn"/>
-    <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Log in with Email"
-            android:layout_gravity="bottom"
-            android:id="@+id/mail"/>
     <com.facebook.widget.LoginButton
             xmlns:facebook="http://schemas.android.com/apk/res-auto"
             android:id="@+id/facebook"
@@ -51,16 +16,9 @@
             facebook:confirm_logout="false"
             facebook:fetch_user_info="true"
             />
-    <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Signup"
-            android:layout_gravity="bottom"
-            android:id="@+id/signup"/>
-
     <com.google.android.gms.common.SignInButton
             android:id="@+id/google_sign_in_button"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"/>
 
 
