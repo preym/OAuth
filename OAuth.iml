@@ -19,6 +19,7 @@
     <orderEntry type="module" module-name="facebook" />
     <orderEntry type="module" module-name="google-play-services_lib" />
     <orderEntry type="library" name="google-play-services (5)" level="project" />
+    <orderEntry type="library" name="twitter4j-core-4.0.1" level="project" />
   </component>
 </module>
 

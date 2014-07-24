@@ -1,6 +1,8 @@
 package com.ehc.OAuth;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -10,10 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -28,7 +27,9 @@ import com.google.android.gms.plus.model.people.Person;
 
 public class LoginActivity extends Activity implements View.OnClickListener,
     GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
-
+  SharedPreferences pref;
+  private static String CONSUMER_KEY = "E8AtlUJA1szR5vlyllp3XbQmz";
+  private static String CONSUMER_SECRET = "gS5V1ircmdobIoHpELEzBeHYphyI0xLwZIyfTogi4Exz2vaNXt";
   GraphUser currentUser = null;
   LoginButton facebookButton;
   Button emailButton, signOut;
@@ -38,6 +39,7 @@ public class LoginActivity extends Activity implements View.OnClickListener,
   private PlusClient mPlusClient;
   private ConnectionResult mConnectionResult;
   User userDetails;
+  private ImageView imageView;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,12 @@ public class LoginActivity extends Activity implements View.OnClickListener,
     mConnectionProgressDialog = new ProgressDialog(this);
     mConnectionProgressDialog.setMessage("Signing in...");
     findViewById(R.id.google_sign_in_button).setOnClickListener(this);
+
+    pref = getPreferences(0);
+    SharedPreferences.Editor edit = pref.edit();
+    edit.putString("CONSUMER_KEY", CONSUMER_KEY);
+    edit.putString("CONSUMER_SECRET", CONSUMER_SECRET);
+    edit.commit();
   }
 
   public void initializeGooglePlus() {
@@ -61,6 +69,8 @@ public class LoginActivity extends Activity implements View.OnClickListener,
     password = (EditText) findViewById(R.id.password);
     signOut = (Button) findViewById(R.id.sign_out);
     signOut.setOnClickListener(this);
+    imageView= (ImageView) findViewById(R.id.login_twitter);
+    imageView.setOnClickListener(this);
   }
 
   private void getSession() {
@@ -162,6 +172,12 @@ public class LoginActivity extends Activity implements View.OnClickListener,
     userDetails.setLastName(currentPerson.getName().getFamilyName());
   }
 
+  public void populateUserFromTwitter(twitter4j.User user) {
+    userDetails = new User();
+    userDetails.setUserName(user.getName());
+    checkUserExistency();
+  }
+
   @Override
   public void onDisconnected() {
     Toast.makeText(this, " Disconnected.", Toast.LENGTH_LONG).show();
@@ -175,6 +191,14 @@ public class LoginActivity extends Activity implements View.OnClickListener,
     if (view.getId() == R.id.google_sign_in_button) {
       connectToGoogle();
       signInGooglePlus();
+    }
+    if(view.getId()==R.id.login_twitter){
+      Fragment login = new LoginFragment();
+      FragmentTransaction ft = getFragmentManager().beginTransaction();
+      ft.replace(R.id.content_frame, login);
+      ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+      ft.addToBackStack(null);
+      ft.commit();
     }
   }
 
