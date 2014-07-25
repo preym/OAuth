@@ -19,9 +19,8 @@
     <orderEntry type="library" name="google-play-services" level="project" />
     <orderEntry type="library" name="twitter4j-core-4.0.1" level="project" />
     <orderEntry type="module" module-name="google-play-services_lib" />
-    <orderEntry type="library" name="android-support-v4" level="project" />
-    <orderEntry type="library" name="bolts" level="project" />
     <orderEntry type="module" module-name="facebook" />
+    <orderEntry type="module" module-name="android-3github-oauth" />
   </component>
 </module>
 

@@ -1,17 +1,17 @@
 package com.ehc.OAuth;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
+import android.app.*;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import br.com.dina.oauth.github.GithubApp;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -25,237 +25,300 @@ import com.google.android.gms.plus.model.people.Person;
 
 
 public class LoginActivity extends Activity implements View.OnClickListener,
-    GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
-  SharedPreferences pref;
-  private static String CONSUMER_KEY = "E8AtlUJA1szR5vlyllp3XbQmz";
-  private static String CONSUMER_SECRET = "gS5V1ircmdobIoHpELEzBeHYphyI0xLwZIyfTogi4Exz2vaNXt";
-  GraphUser currentUser = null;
-  LoginButton facebookButton;
-  Button emailButton, signOut;
-  EditText password;
-  private static final int REQUEST_CODE_RESOLVE_ERR = 9000;
-  private ProgressDialog mConnectionProgressDialog;
-  private PlusClient mPlusClient;
-  private ConnectionResult mConnectionResult;
-  User userDetails;
-  private ImageView imageView;
+        GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+    SharedPreferences pref;
+    private static String CONSUMER_KEY = "E8AtlUJA1szR5vlyllp3XbQmz";
+    private static String CONSUMER_SECRET = "gS5V1ircmdobIoHpELEzBeHYphyI0xLwZIyfTogi4Exz2vaNXt";
+    GraphUser currentUser = null;
+    LoginButton facebookButton;
+    Button emailButton, signOut;
+    EditText password;
+    private static final int REQUEST_CODE_RESOLVE_ERR = 9000;
+    private ProgressDialog mConnectionProgressDialog;
+    private PlusClient mPlusClient;
+    private ConnectionResult mConnectionResult;
+    User userDetails;
+    private ImageView imageView;
+    private GithubApp mApp;
+    private ImageView btnConnect;
+    private TextView tvSummary;
 
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.login);
-    initializeGooglePlus();
-    getWidgets();
-    mConnectionProgressDialog = new ProgressDialog(this);
-    mConnectionProgressDialog.setMessage("Signing in...");
-    findViewById(R.id.google_sign_in_button).setOnClickListener(this);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.login);
+        initializeGooglePlus();
+        getWidgets();
 
-    pref = getPreferences(0);
-    SharedPreferences.Editor edit = pref.edit();
-    edit.putString("CONSUMER_KEY", CONSUMER_KEY);
-    edit.putString("CONSUMER_SECRET", CONSUMER_SECRET);
-    edit.commit();
-  }
+        mApp = new GithubApp(this, GithubApplicationData.CLIENT_ID,
+                GithubApplicationData.CLIENT_SECRET, GithubApplicationData.CALLBACK_URL);
+        mApp.setListener(listener);
 
-  public void initializeGooglePlus() {
-    mPlusClient = new PlusClient.Builder(this, this, this).setActions("http://schemas.google.com/AddActivity", "http://schemas.google.com/BuyActivity").build();
-  }
+        mConnectionProgressDialog = new ProgressDialog(this);
+        mConnectionProgressDialog.setMessage("Signing in...");
+        findViewById(R.id.google_sign_in_button).setOnClickListener(this);
 
-  private void getWidgets() {
-    facebookButton = (LoginButton) findViewById(R.id.facebook);
-    facebookButton.setReadPermissions("email");
-    signOut = (Button) findViewById(R.id.sign_out);
-    signOut.setOnClickListener(this);
-    imageView= (ImageView) findViewById(R.id.login_twitter);
-    imageView.setOnClickListener(this);
-  }
+        pref = getPreferences(0);
+        SharedPreferences.Editor edit = pref.edit();
+        edit.putString("CONSUMER_KEY", CONSUMER_KEY);
+        edit.putString("CONSUMER_SECRET", CONSUMER_SECRET);
+        edit.commit();
 
-  private void getSession() {
-    Session.openActiveSession(this, true, new Session.StatusCallback() {
-      @Override
-      public void call(Session session, SessionState state, Exception exception) {
-        if (!session.isOpened())
-          session = new Session(getApplicationContext());
-        if (session.isOpened()) {
-          Request.newMeRequest(session, new Request.GraphUserCallback() {
-            // callback after Graph API response with user object
+        tvSummary = (TextView) findViewById(R.id.tvSummary);
+        btnConnect = (ImageView) findViewById(R.id.login_github);
+        btnConnect.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onCompleted(GraphUser user, Response response) {
-              if (user != null) {
-                currentUser = user;
-                populateUserFromfb();
-                checkUserExistency();
-              } else {
-              }
+            public void onClick(View view) {
+                if (mApp.hasAccessToken()) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(
+                            LoginActivity.this);
+                    builder.setMessage("Disconnect from GitHub?")
+                            .setCancelable(false)
+                            .setPositiveButton("Yes",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(
+                                                DialogInterface dialog, int id) {
+                                            mApp.resetAccessToken();
+                                            tvSummary.setText("Not connected");
+                                        }
+                                    })
+                            .setNegativeButton("No",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(
+                                                DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                    final AlertDialog alert = builder.create();
+                    alert.show();
+                } else {
+                    mApp.authorize();
+                }
             }
-          }).executeAsync();
+        });
+        if (mApp.hasAccessToken()) {
+            tvSummary.setText("Connected as " + mApp.getUserName());
+        }
+
+    }
+
+    GithubApp.OAuthAuthenticationListener listener = new GithubApp.OAuthAuthenticationListener() {
+
+        @Override
+        public void onSuccess() {
+            Log.d("test", "userName: " + mApp.getUserName());
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("\n" + mApp.getUserName() + "\n" + mApp.getName() + "\n" + mApp.getEmail() + "\n" + mApp.getLocation());
+            tvSummary.setText("Details: " + buffer);
+        }
+
+        @Override
+        public void onFail(String error) {
+            Toast.makeText(LoginActivity.this, error, Toast.LENGTH_SHORT).show();
+        }
+    };
+
+
+    public void initializeGooglePlus() {
+        mPlusClient = new PlusClient.Builder(this, this, this).setActions("http://schemas.google.com/AddActivity", "http://schemas.google.com/BuyActivity").build();
+    }
+
+    private void getWidgets() {
+        facebookButton = (LoginButton) findViewById(R.id.facebook);
+        facebookButton.setReadPermissions("email");
+        signOut = (Button) findViewById(R.id.sign_out);
+        signOut.setOnClickListener(this);
+        imageView = (ImageView) findViewById(R.id.login_twitter);
+        imageView.setOnClickListener(this);
+    }
+
+    private void getSession() {
+        Session.openActiveSession(this, true, new Session.StatusCallback() {
+            @Override
+            public void call(Session session, SessionState state, Exception exception) {
+                if (!session.isOpened())
+                    session = new Session(getApplicationContext());
+                if (session.isOpened()) {
+                    Request.newMeRequest(session, new Request.GraphUserCallback() {
+                        // callback after Graph API response with user object
+                        @Override
+                        public void onCompleted(GraphUser user, Response response) {
+                            if (user != null) {
+                                currentUser = user;
+                                populateUserFromfb();
+                                checkUserExistency();
+                            } else {
+                            }
+                        }
+                    }).executeAsync();
+                } else {
+                }
+
+            }
+        });
+    }
+
+    private void populateUserFromfb() {
+        userDetails = new User();
+        userDetails.setFirstName(currentUser.getFirstName());
+        userDetails.setLastName(currentUser.getLastName());
+        userDetails.setUserName(currentUser.getUsername());
+        userDetails.setEmail((String) currentUser.getProperty("email"));
+    }
+
+    private void checkUserExistency() {
+
+        String name = "";
+        if (userDetails != null)
+            name = userDetails.getUserName();
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery("select * from user where USERNAME='"
+                + name + "'", null);
+        if (cursor != null && cursor.getCount() > 0) {
+            startDashboard();
         } else {
+            startSignupActivity();
         }
 
-      }
-    });
-  }
-
-  private void populateUserFromfb() {
-    userDetails = new User();
-    userDetails.setFirstName(currentUser.getFirstName());
-    userDetails.setLastName(currentUser.getLastName());
-    userDetails.setUserName(currentUser.getUsername());
-    userDetails.setEmail((String) currentUser.getProperty("email"));
-  }
-
-  private void checkUserExistency() {
-
-    String name = "";
-    if (userDetails != null)
-      name = userDetails.getUserName();
-    DatabaseHelper dbHelper = new DatabaseHelper(this);
-    SQLiteDatabase database = dbHelper.getReadableDatabase();
-    Cursor cursor = database.rawQuery("select * from user where USERNAME='"
-        + name + "'", null);
-    if (cursor != null && cursor.getCount() > 0) {
-      startDashboard();
-    } else {
-      startSignupActivity();
     }
 
-  }
-
-  private void startSignupActivity() {
-    Intent intent = new Intent(this, SignUpActivity.class);
-    userDetails.setLocation("Hyderabad");
-    intent.putExtra("user", userDetails);
-    startActivity(intent);
-  }
-
-  private void startDashboard() {
-    Intent intent = new Intent(this, DashboardActivity.class);
-    intent.putExtra("userName", userDetails.getUserName());
-    startActivity(intent);
-  }
-
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == REQUEST_CODE_RESOLVE_ERR && resultCode == RESULT_OK) {
-      mConnectionResult = null;
-      connectToGoogle();
-    } else {
-      Session session = Session.getActiveSession();
-      session.onActivityResult(this, requestCode, resultCode, data);
-      if (resultCode == RESULT_OK) {
-        getSession();
-      }
+    private void startSignupActivity() {
+        Intent intent = new Intent(this, SignUpActivity.class);
+        userDetails.setLocation("Hyderabad");
+        intent.putExtra("user", userDetails);
+        startActivity(intent);
     }
-  }
 
-  @Override
-  public void onConnected(Bundle bundle) {
-    mConnectionProgressDialog.cancel();
-    if (mPlusClient.isConnected()) {
-      populateUserFromGPlus();
-      checkUserExistency();
+    private void startDashboard() {
+        Intent intent = new Intent(this, DashboardActivity.class);
+        intent.putExtra("userName", userDetails.getUserName());
+        startActivity(intent);
     }
-  }
 
-  private void populateUserFromGPlus() {
-    Person currentPerson = mPlusClient.getCurrentPerson();
-    String accountName = mPlusClient.getAccountName();
-    Toast.makeText(this, accountName + " is connected.", Toast.LENGTH_LONG).show();
-    userDetails = new User();
-    userDetails.setEmail(accountName);
-    userDetails.setUserName(currentPerson.getDisplayName());
-    userDetails.setFirstName(currentPerson.getName().getGivenName());
-    userDetails.setLastName(currentPerson.getName().getFamilyName());
-  }
-
-  public void populateUserFromTwitter(twitter4j.User user) {
-    userDetails = new User();
-    userDetails.setUserName(user.getName());
-    checkUserExistency();
-  }
-
-  @Override
-  public void onDisconnected() {
-    Toast.makeText(this, " Disconnected.", Toast.LENGTH_LONG).show();
-  }
-
-  @Override
-  public void onClick(View view) {
-    if (view.getId() == R.id.sign_out) {
-      signOutGooglePlus();
-    }
-    if (view.getId() == R.id.google_sign_in_button) {
-      connectToGoogle();
-      signInGooglePlus();
-    }
-    if(view.getId()==R.id.login_twitter){
-      Fragment login = new LoginFragment();
-      FragmentTransaction ft = getFragmentManager().beginTransaction();
-      ft.replace(R.id.content_frame, login);
-      ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-      ft.addToBackStack(null);
-      ft.commit();
-    }
-  }
-
-  public void signInGooglePlus() {
-    if (!mPlusClient.isConnected()) {
-      if (mConnectionResult == null) {
-        mConnectionProgressDialog.show();
-        connectToGoogle();
-      } else {
-        try {
-          mConnectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
-        } catch (IntentSender.SendIntentException e) {
-          mConnectionResult = null;
-          connectToGoogle();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_RESOLVE_ERR && resultCode == RESULT_OK) {
+            mConnectionResult = null;
+            connectToGoogle();
+        } else {
+            Session session = Session.getActiveSession();
+            session.onActivityResult(this, requestCode, resultCode, data);
+            if (resultCode == RESULT_OK) {
+                getSession();
+            }
         }
-      }
     }
-  }
 
-  public void signOutGooglePlus() {
-    if (mPlusClient.isConnected()) {
-      mPlusClient.clearDefaultAccount();
-      mPlusClient.disconnect();
-      Toast.makeText(getApplicationContext(), "Successfully signOut", Toast.LENGTH_SHORT).show();
-    }
-  }
-
-  @Override
-  public void onConnectionFailed(ConnectionResult result) {
-    if (mConnectionProgressDialog.isShowing()) {
-      // The user clicked the sign-in button already. Start to resolve
-      // connection errors. Wait until onConnected() to dismiss the
-      // connection dialog.
-      if (result.hasResolution()) {
-        try {
-          result.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
-        } catch (IntentSender.SendIntentException e) {
-          connectToGoogle();
+    @Override
+    public void onConnected(Bundle bundle) {
+        mConnectionProgressDialog.cancel();
+        if (mPlusClient.isConnected()) {
+            populateUserFromGPlus();
+            checkUserExistency();
         }
-      }
     }
-    // Save the result and resolve the connection failure upon a user click.
-    mConnectionResult = result;
 
-  }
+    private void populateUserFromGPlus() {
+        Person currentPerson = mPlusClient.getCurrentPerson();
+        String accountName = mPlusClient.getAccountName();
+        Toast.makeText(this, accountName + " is connected.", Toast.LENGTH_LONG).show();
+        userDetails = new User();
+        userDetails.setEmail(accountName);
+        userDetails.setUserName(currentPerson.getDisplayName());
+        userDetails.setFirstName(currentPerson.getName().getGivenName());
+        userDetails.setLastName(currentPerson.getName().getFamilyName());
+    }
 
-  @Override
-  protected void onStart() {
-    super.onStart();
-    // connectToGoogle();
-  }
+    public void populateUserFromTwitter(twitter4j.User user) {
+        userDetails = new User();
+        userDetails.setUserName(user.getName());
+        checkUserExistency();
+    }
 
-  public void connectToGoogle() {
-    mPlusClient.connect();
-  }
+    @Override
+    public void onDisconnected() {
+        Toast.makeText(this, " Disconnected.", Toast.LENGTH_LONG).show();
+    }
 
-  @Override
-  protected void onStop() {
-    super.onStop();
-    mPlusClient.disconnect();
-  }
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.sign_out) {
+            signOutGooglePlus();
+        }
+        if (view.getId() == R.id.google_sign_in_button) {
+            connectToGoogle();
+            signInGooglePlus();
+        }
+        if (view.getId() == R.id.login_twitter) {
+            Fragment login = new LoginFragment();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.content_frame, login);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.addToBackStack(null);
+            ft.commit();
+        }
+    }
+
+    public void signInGooglePlus() {
+        if (!mPlusClient.isConnected()) {
+            if (mConnectionResult == null) {
+                mConnectionProgressDialog.show();
+                connectToGoogle();
+            } else {
+                try {
+                    mConnectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
+                } catch (IntentSender.SendIntentException e) {
+                    mConnectionResult = null;
+                    connectToGoogle();
+                }
+            }
+        }
+    }
+
+    public void signOutGooglePlus() {
+        if (mPlusClient.isConnected()) {
+            mPlusClient.clearDefaultAccount();
+            mPlusClient.disconnect();
+            Toast.makeText(getApplicationContext(), "Successfully signOut", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        if (mConnectionProgressDialog.isShowing()) {
+            // The user clicked the sign-in button already. Start to resolve
+            // connection errors. Wait until onConnected() to dismiss the
+            // connection dialog.
+            if (result.hasResolution()) {
+                try {
+                    result.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
+                } catch (IntentSender.SendIntentException e) {
+                    connectToGoogle();
+                }
+            }
+        }
+        // Save the result and resolve the connection failure upon a user click.
+        mConnectionResult = result;
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // connectToGoogle();
+    }
+
+    public void connectToGoogle() {
+        mPlusClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mPlusClient.disconnect();
+    }
 }
 
