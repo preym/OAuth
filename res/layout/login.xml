@@ -39,6 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/login_button"/>
+
     <ImageView
             android:id="@+id/login_github"
             android:layout_width="300dp"
