@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import com.facebook.Request;
@@ -65,8 +64,6 @@ public class LoginActivity extends Activity implements View.OnClickListener,
   private void getWidgets() {
     facebookButton = (LoginButton) findViewById(R.id.facebook);
     facebookButton.setReadPermissions("email");
-    emailButton = (Button) findViewById(R.id.email);
-    password = (EditText) findViewById(R.id.password);
     signOut = (Button) findViewById(R.id.sign_out);
     signOut.setOnClickListener(this);
     imageView= (ImageView) findViewById(R.id.login_twitter);
