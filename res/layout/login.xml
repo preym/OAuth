@@ -10,14 +10,6 @@
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-    <TextView
-            android:id="@+id/tvSummary"
-            android:layout_marginTop="5dp"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Not connected"
-            android:layout_marginLeft="15dip"
-            android:layout_marginBottom="20dip"/>
 
     <com.facebook.widget.LoginButton
             xmlns:facebook="http://schemas.android.com/apk/res-auto"

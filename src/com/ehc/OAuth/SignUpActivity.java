@@ -29,9 +29,6 @@ public class SignUpActivity extends Activity {
   EditText contactNumber;
   EditText address;
   Button signUp;
-  Button signUpWithMail;
-  // LoginButton signUpWithFacebook;
-  GraphUser currentUser;
 
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -40,7 +37,6 @@ public class SignUpActivity extends Activity {
     applyAction();
     if (getIntent().hasExtra("user")) {
       User user = (User) getIntent().getSerializableExtra("user");
-      //  signUpWithFacebook.setVisibility(View.GONE);
       populateFields(user);
     }
   }
@@ -125,68 +121,7 @@ public class SignUpActivity extends Activity {
     contactNumber = (EditText) findViewById(R.id.contact_number);
     address = (EditText) findViewById(R.id.address);
     signUp = (Button) findViewById(R.id.sign_up);
-//    signUpWithFacebook = (LoginButton) findViewById(R.id.sign_with_facebook);
-//    signUpWithFacebook.setReadPermissions("email");
   }
-
-//  @Override
-//  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//    super.onActivityResult(requestCode, resultCode, data);
-//    Session session = Session.getActiveSession();
-//    session.onActivityResult(this, requestCode, resultCode, data);
-//    if (resultCode == RESULT_OK) {
-//      getSession();
-//      //signUpWithFacebook.setVisibility(View.GONE);
-//    }
-//  }
-//
-//  private void checkUserExistency() {
-//    DatabaseHelper dbHelper = new DatabaseHelper(this);
-//    SQLiteDatabase database = dbHelper.getReadableDatabase();
-//    Cursor cursor = database.rawQuery("select * from user where USERNAME='"
-//        + currentUser.getUsername() + "'", null);
-//    if (cursor != null && cursor.getCount() > 0) {
-//      startDashboard();
-//    }
-//  }
-//
-//  private void getSession() {
-//    Session.openActiveSession(this, true, new Session.StatusCallback() {
-//      @Override
-//      public void call(Session session, SessionState state, Exception exception) {
-//        if (!session.isOpened())
-//          session = new Session(getApplicationContext());
-//        if (session.isOpened()) {
-//          Log.d("test:", "session opened");
-//          Request.newMeRequest(session, new Request.GraphUserCallback() {
-//            // callback after Graph API response with user object
-//            @Override
-//            public void onCompleted(GraphUser user, Response response) {
-//              if (user != null) {
-//                Log.d("test:", "user not null");
-//                currentUser = user;
-//                populateFields();
-//                checkUserExistency();
-//              } else {
-//                Log.d("test:", "user null");
-//              }
-//            }
-//          }).executeAsync();
-//        } else {
-//          Log.d("test:", "session not opened");
-//        }
-//
-//      }
-//    });
-//  }
-
-//  private void populateFields() {
-//    userName.setText(currentUser.getUsername());
-//    firstName.setText(currentUser.getFirstName());
-//    lastName.setText(currentUser.getLastName());
-//    address.setText("hyderabad");
-//    email.setText((String) currentUser.getProperty("email"));
-//  }
 
   private void populateFields(User user) {
     userName.setText(user.getUserName());

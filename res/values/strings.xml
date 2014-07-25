@@ -3,4 +3,11 @@
     <string name="app_name">OAuth</string>
     <string name="app_id">1428925007356558</string>
     <string name="fbGrantPermission">Grant Hermes permission to post</string>
+
+    <string name="Twitter_CONSUMER_KEY">E8AtlUJA1szR5vlyllp3XbQmz</string>
+    <string name="Twitter_CONSUMER_SECRET">gS5V1ircmdobIoHpELEzBeHYphyI0xLwZIyfTogi4Exz2vaNXt</string>
+
+    <string name="GitHub_CLIENT_ID">d23a5c06b118b62f5241</string>
+    <string name="Github_CLIENT_SECRET">c7f41fc40da2ef7b7cd6bcdbde92886fb0db8c07</string>
+    <string name="Github_CALLBACK_URL">http://eggheadcreative.com</string>
 </resources>
